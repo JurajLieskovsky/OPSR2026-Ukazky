@@ -1,4 +1,5 @@
-import numpy as np
+import autograd
+import autograd.numpy as np
 
 ## Parametry
 g = 9.81  # m / s^2
@@ -60,6 +61,5 @@ def f(t, x, u):
             np.linalg.solve(M, -c + tau_p + B @ u),
         )
     )
-
 
 
