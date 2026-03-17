@@ -3,11 +3,16 @@ import autograd.numpy as np
 import scipy
 import matplotlib.pyplot as plt
 
+import meshcat
+
 # Dynamický model
 import birotor_with_payload_dynamics as dyn
 
+# Visualizér
+import birotor_with_payload_visualizer as vis
+
 # Rovnovážný stav
-x_eq = np.zeros(8)
+x_eq = np.array([0.0, 2, 0, 0, 0, 0, 0, 0])
 u_eq = dyn.g * (dyn.m_P + dyn.m_Q) / 2 * np.ones(2)
 
 dfdx = autograd.jacobian(lambda x: dyn.f(0.0, x, u_eq))
@@ -24,7 +29,7 @@ P = scipy.linalg.solve_continuous_are(A, B, Q, R)
 K = np.linalg.solve(R, B.T @ P)
 
 # Simulace
-x0 = np.array([1, -0.1, 0, 0, 0, 0, 0, 0])
+x0 = np.array([3, 1, 0, 0, 0, 0, 0, 0])
 T = 5
 
 sol = scipy.integrate.solve_ivp(
@@ -43,4 +48,19 @@ for i in range(4):
     plt.plot(tspan, sol.sol(tspan)[i, :], label=f"x{i}")
 
 ax.legend()
-plt.show()
+plt.show(block=False)
+
+# Animation
+visualizer = meshcat.Visualizer()
+
+vis.set_birotor(visualizer, 2 * dyn.a, 0.04, 0.09, dyn.l)
+
+anim = meshcat.animation.Animation(default_framerate=len(tspan) / T)
+
+for i, t in enumerate(tspan):
+    with anim.at_frame(visualizer, i) as frame:
+        vis.set_birotor_state(frame, sol.sol(t))
+
+visualizer.set_animation(anim, play=False)
+
+input("Press Enter to continue...")
