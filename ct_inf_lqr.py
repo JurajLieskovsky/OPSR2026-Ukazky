@@ -1,5 +1,4 @@
-import autograd
-import autograd.numpy as np
+import numpy as np
 import scipy
 import matplotlib.pyplot as plt
 
@@ -15,11 +14,7 @@ import birotor_with_payload_visualizer as vis
 x_eq = np.array([0.0, 2, 0, 0, 0, 0, 0, 0])
 u_eq = dyn.g * (dyn.m_P + dyn.m_Q) / 2 * np.ones(2)
 
-dfdx = autograd.jacobian(lambda x: dyn.f(0.0, x, u_eq))
-dfdu = autograd.jacobian(lambda u: dyn.f(0.0, x_eq, u))
-
-A = dfdx(x_eq)
-B = dfdu(u_eq)
+A, B = dyn.df(0, x_eq, u_eq)
 
 # Návrh LQR
 Q = 1e1 * np.identity(8)

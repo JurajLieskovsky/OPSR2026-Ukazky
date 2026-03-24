@@ -62,4 +62,12 @@ def f(t, x, u):
         )
     )
 
+## Diferenciace
+def df(t, x, u):
+    dfdx = autograd.jacobian(lambda x: f(t, x, u))
+    dfdu = autograd.jacobian(lambda u: f(t, x, u))
 
+    A = dfdx(x)
+    B = dfdu(u)
+
+    return A, B
