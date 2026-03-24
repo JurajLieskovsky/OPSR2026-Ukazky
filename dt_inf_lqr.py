@@ -50,15 +50,21 @@ for k in range(N):
     us[k] = u
     xs[k + 1] = solver.y
 
+us[N] = us[N-1]
+
 # Vizualizace
 tspan = np.linspace(0, h * N, N + 1)
 
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(2)
 
 for i in range(4):
-    plt.plot(tspan, [x[i] for x in xs], label=f"x{i}")
+    ax[0].plot(tspan, [x[i] for x in xs], label=f"x{i}")
 
-ax.legend()
+for i in range(2):
+    ax[1].step(tspan, [u[i] for u in us], where='post', label=f"u{i}")
+
+ax[0].legend()
+ax[1].legend()
 plt.show(block=False)
 
 # Animation
