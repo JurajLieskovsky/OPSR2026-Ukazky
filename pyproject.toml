@@ -1,0 +1,15 @@
+[project]
+name = "opsr2026"
+version = "0.1.0"
+description = ""
+readme = ""
+requires-python = ">=3.14"
+dependencies = [
+    "autograd>=1.8.0",
+    "cvxpy>=1.8.2",
+    "matplotlib>=3.10.8",
+    "meshcat>=0.3.2",
+    "osqp>=1.1.1",
+    "pyscipopt>=6.1.0",
+    "scipy>=1.17.1",
+]

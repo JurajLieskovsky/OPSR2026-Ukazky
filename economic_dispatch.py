@@ -12,7 +12,7 @@ objective = cp.Minimize(sum(a) + b @ x + c @ cp.square(x))
 constraints = [
     l <= x,
     x <= u,
-    sum(x) == 900,
+    cp.sum(x) == 900,
 ]
 
 problem = cp.Problem(objective, constraints)
