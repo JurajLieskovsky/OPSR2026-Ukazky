@@ -50,7 +50,7 @@ for k in range(N):
     us[k] = u
     xs[k + 1] = solver.y
 
-us[N] = us[N-1]
+us[N] = us[N - 1]
 
 # Vizualizace
 tspan = np.linspace(0, h * N, N + 1)
@@ -61,7 +61,7 @@ for i in range(4):
     ax[0].plot(tspan, [x[i] for x in xs], label=f"x{i}")
 
 for i in range(2):
-    ax[1].step(tspan, [u[i] for u in us], where='post', label=f"u{i}")
+    ax[1].step(tspan, [u[i] for u in us], where="post", label=f"u{i}")
 
 ax[0].legend()
 ax[1].legend()
