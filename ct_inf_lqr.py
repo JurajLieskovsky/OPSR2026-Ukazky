@@ -24,18 +24,21 @@ P = scipy.linalg.solve_continuous_are(A, B, Q, R)
 K = np.linalg.solve(R, B.T @ P)
 
 # Simulace
-x0 = np.array([3, 1, 0, 0, 0, 0, 0, 0])
 T = 5
 
+tspan = np.linspace(0, T, 100)
+dspan = [np.random.normal(0.0, 1e0) for _ in tspan]
+
+x0 = np.array([3, 1, 0, 0, 0, 0, 0, 0])
+
 sol = scipy.integrate.solve_ivp(
-    lambda t, x: dyn.f(t, x, u_eq - K @ (x - x_eq)),
+    lambda t, x: dyn.f(t, x, u_eq - K @ (x - x_eq), np.array([np.interp(t, tspan, dspan)])),
     [0, T],
     x0,
     dense_output=True,
 )
 
 # Vizualizace
-tspan = np.linspace(0, T, 100)
 
 xs = [sol.sol(t) for t in tspan]
 us = [u_eq - K @ (x - x_eq) for x in xs]

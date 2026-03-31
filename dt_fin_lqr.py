@@ -55,7 +55,7 @@ xs[0] = solver.y
 
 for k in range(N):
     u = u_eq - K[k] @ (solver.y - x_eq)
-    solver.set_f_params(u)
+    solver.set_f_params(u, np.random.normal(0.0, 1e0, 1))
     solver.integrate(solver.t + h)
 
     us[k] = u

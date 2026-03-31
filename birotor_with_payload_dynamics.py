@@ -10,9 +10,11 @@ a = 0.175  # m
 m_P = 0.1  # kg
 l = 0.5  # m
 
+C_P = 1
+C_Q = 4
 
 ## Dynamika
-def f(t, x, u):
+def f(t, x, u, d=np.zeros(1)):
     (y, z, theta, phi, y_dot, z_dot, theta_dot, phi_dot) = x
 
     # Mass matrix
@@ -55,12 +57,23 @@ def f(t, x, u):
         ]
     )
 
+    # Disturbance matrix
+    E = np.array(
+        [
+            [-C_Q - C_P],
+            [0.0],
+            [-C_P * l * np.cos(phi)],
+            [0.0],
+        ]
+    )
+
     return np.concatenate(
         (
             x[4:],
-            np.linalg.solve(M, -c + tau_p + B @ u),
+            np.linalg.solve(M, -c + tau_p + B @ u + E @ d),
         )
     )
+
 
 ## Diferenciace
 def df(t, x, u):
