@@ -32,7 +32,7 @@ infK = np.linalg.solve(R + B.T @ infP @ B, B.T @ infP @ A)
 # Návrh LQR s konečným horizontem
 N = 500
 
-K = [np.zeros((2,8)) for _ in range(N)]
+K = [np.zeros((2, 8)) for _ in range(N)]
 
 P = infP
 for k in reversed(range(N)):
