@@ -56,6 +56,7 @@ plt.show(block=False)
 visualizer = meshcat.Visualizer()
 
 vis.set_birotor(visualizer, 2 * dyn.a, 0.04, 0.09, dyn.l)
+vis.set_birotor_state(visualizer, x0)
 
 anim = meshcat.animation.Animation(default_framerate=len(tspan) / T)
 
