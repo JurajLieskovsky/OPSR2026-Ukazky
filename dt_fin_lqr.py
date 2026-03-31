@@ -22,15 +22,26 @@ cont_A, cont_B = dyn.df(0, x_eq, u_eq)
 A = np.identity(8) + h * cont_A
 B = h * cont_B
 
-# Návrh LQR
+# Návrh LQR s nekonečným horizontem
 Q = 1e1 * np.identity(8)
 R = np.identity(2)
 
-P = scipy.linalg.solve_discrete_are(A, B, Q, R)
-K = np.linalg.solve(R + B.T @ P @ B, B.T @ P @ A)
+infP = scipy.linalg.solve_discrete_are(A, B, Q, R)
+infK = np.linalg.solve(R + B.T @ infP @ B, B.T @ infP @ A)
+
+# Návrh LQR s konečným horizontem
+N = 500
+
+K = [np.zeros((2,8)) for _ in range(N)]
+
+P = infP
+for k in reversed(range(N)):
+    S = R + B.T @ P @ B
+    K[k] = np.linalg.solve(S, B.T @ P @ A)
+    P = Q + A.T @ P @ A - K[k].T @ S @ K[k]
+
 
 # Simulace
-N = 500
 x0 = np.array([3, 1, 0, 0, 0, 0, 0, 0])
 
 solver = scipy.integrate.ode(dyn.f)
@@ -43,7 +54,7 @@ us = [np.zeros(2) for _ in range(N + 1)]
 xs[0] = solver.y
 
 for k in range(N):
-    u = u_eq - K @ (solver.y - x_eq)
+    u = u_eq - K[k] @ (solver.y - x_eq)
     solver.set_f_params(u)
     solver.integrate(solver.t + h)
 
