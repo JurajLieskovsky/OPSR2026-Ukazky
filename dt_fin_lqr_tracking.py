@@ -30,6 +30,10 @@ def ref_state(k, N):
 h = 1e-2
 N = 500
 
+# Dynamika v diskrétním čase
+def dt_dynamics(k, x, u):
+    return x + h * dyn.f(k * h, x, u)
+
 # Rovnovážný stav
 x_eq = np.zeros(8)
 u_eq = dyn.g * (dyn.m_P + dyn.m_Q) / 2 * np.ones(2)
@@ -54,7 +58,7 @@ p = np.zeros(8)
 P = infP
 
 for k in reversed(range(N)):
-    c = ref_state(k, N) - ref_state(k+1, N)
+    c = dt_dynamics(k, ref_state(k, N), u_eq) - ref_state(k+1, N)
     q = np.zeros(8)
     r = np.zeros(2)
 
