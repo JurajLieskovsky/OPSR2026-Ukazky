@@ -94,27 +94,33 @@ us[N] = us[N - 1]
 # Vizualizace
 tspan = np.linspace(0, h * N, N + 1)
 
-fig, ax = plt.subplots(3)
+# Série
+fig1, ax1 = plt.subplots(2)
 
 for i in range(4):
-    ax[0].plot(tspan, [x[i] for x in xs], label=f"x{i}")
-    ax[0].plot(tspan, [ref_state(k, N)[i] for k in range(N + 1)], label=f"x{i}_ref")
+    ax1[0].plot(tspan, [x[i] for x in xs], label=f"x{i}")
+    ax1[0].plot(tspan, [ref_state(k, N)[i] for k in range(N + 1)], label=f"x{i}_ref")
 
 for i in range(2):
-    ax[1].step(tspan, [u[i] for u in us], where="post", label=f"u{i}")
+    ax1[1].step(tspan, [u[i] for u in us], where="post", label=f"u{i}")
 
+ax1[0].legend()
+ax1[1].legend()
 
-ax[2].plot(
+# Prostor
+fig2, ax2 = plt.subplots()
+
+ax2.plot(
     [ref_state(k, N)[0] for k in range(N + 1)],
     [ref_state(k, N)[1] for k in range(N + 1)],
     label="x_ref",
 )
-ax[2].plot([x[0] for x in xs], [x[1] for x in xs], label="x")
-ax[2].set_aspect("equal", "box")
+ax2.plot([x[0] for x in xs], [x[1] for x in xs], label="x")
 
-ax[0].legend()
-ax[1].legend()
-ax[2].legend()
+ax2.set_aspect("equal", "box")
+ax2.legend()
+
+# Show
 plt.show(block=False)
 
 # Animation
