@@ -1,6 +1,8 @@
+from car_import import constraints
 import numpy as np
 import scipy
 import matplotlib.pyplot as plt
+import cvxpy as cp
 
 import meshcat
 
@@ -32,39 +34,38 @@ infK = np.linalg.solve(R + B.T @ infP @ B, B.T @ infP @ A)
 # Návrh LQR s konečným horizontem
 N = 500
 
-K = [np.zeros((2, 8)) for _ in range(N)]
+x = cp.Variable((8, N + 1))
+u = cp.Variable((2, N))
+x_init = cp.Parameter(8)
 
-P = infP
-for k in reversed(range(N)):
-    S = R + B.T @ P @ B
-    K[k] = np.linalg.solve(S, B.T @ P @ A)
-    P = Q + A.T @ P @ A - K[k].T @ S @ K[k]
+constraints = [
+    x[:, 1:] == A @ x[:, :-1] + B @ u,
+    x[:, 0] == x_init,
+    u >= -u_eq[:, np.newaxis],
+]
 
+LQ = np.linalg.cholesky(Q)
+LR = np.linalg.cholesky(R)
 
-# Simulace
-x0 = np.array([3, 1, 0, 0, 0, 0, 0, 0])
+objective = cp.Minimize(
+    cp.sum_squares(LQ.T @ x[:, :-1])
+    + cp.sum_squares(LR.T @ u)
+    + cp.quad_form(x[:, N], infP)
+)
 
-solver = scipy.integrate.ode(dyn.f)
-solver.set_integrator("dopri5")
-solver.set_initial_value(x0)
+problem = cp.Problem(objective, constraints)
 
-xs = [np.zeros(8) for _ in range(N + 1)]
-us = [np.zeros(2) for _ in range(N + 1)]
-
-xs[0] = solver.y
-
-for k in range(N):
-    u = u_eq - K[k] @ (solver.y - x_eq)
-    solver.set_f_params(u, np.random.normal(0.0, 1e0, 1))
-    solver.integrate(solver.t + h)
-
-    us[k] = u
-    xs[k + 1] = solver.y
-
-us[N] = us[N - 1]
+x0 = np.array([5, 5, 0, 0, 0, 0, 0, 0])
+x_init.value = x0 - x_eq
+problem.solve()
 
 # Vizualizace
 tspan = np.linspace(0, h * N, N + 1)
+
+xs = [x_eq + x.value[:, k] for k in range(N + 1)]
+us = [u_eq + u.value[:, k] for k in range(N)]
+
+us.append(us[N - 1])
 
 fig, ax = plt.subplots(2)
 
